@@ -3,9 +3,7 @@
 A full-stack E-Commerce web application built using Django.  
 This project includes user authentication, product management, customer dashboards, booking/orders, and manager/admin functionality.
 this project is about inventery management with stock check and booking products manager can acces all ordels list and update status like pending, cancel, conformend
-ect customer have profile update and can book products and place order customer can accces all his orders list can delete his order also. for login uses this 
-username : Vennela@122
-password : Gvnd@123
+ect customer have profile update and can book products and place order customer can accces all his orders list can delete his order also.
 
 ---
 
