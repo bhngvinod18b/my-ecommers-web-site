@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Booking Success</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            background:#f3f4f6;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+
+        .box{
+            background:white;
+            padding:40px;
+            border-radius:12px;
+            text-align:center;
+            box-shadow:0 5px 20px rgba(0,0,0,0.1);
+            width:350px;
+        }
+
+        .icon{
+            font-size:60px;
+            color:#10b981;
+            margin-bottom:10px;
+        }
+
+        h1{
+            color:#111827;
+            margin-bottom:10px;
+        }
+
+        p{
+            color:#4b5563;
+            margin-bottom:20px;
+        }
+
+        .btn{
+            display:inline-block;
+            background:#2563eb;
+            color:white;
+            padding:10px 15px;
+            border-radius:6px;
+            text-decoration:none;
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            background:#1d4ed8;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="box">
+
+        <div class="icon">✅</div>
+
+        <h1>Booking Successful!</h1>
+
+        <p>Your product has been booked successfully.</p>
+
+        <a href="{% url 'customer_home' %}" class="btn">
+            Go to Home
+        </a>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manager Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f3f4f6;
+        }
+
+        /* TOP BAR */
+        .header {
+            background: #111827;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 8px 12px;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* CONTAINER */
+        .container {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* CARDS */
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+        }
+
+        /* ITEMS */
+        .item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge-user {
+            background: #3b82f6;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        .badge-manager {
+            background: #10b981;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+
+        /* ORDER STATUS BADGE */
+        .status {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: white;
+        }
+
+        .pending { background: #f59e0b; }
+        .confirmed { background: #10b981; }
+        .cancelled { background: #ef4444; }
+
+        /* FORM */
+        select {
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 5px 10px;
+            border: none;
+            background: #111827;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #374151;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h2>🧑‍💼 Manager Dashboard</h2>
+
+    <a class="logout-btn" href="{% url 'logout' %}">
+        Logout
+    </a>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <!-- USERS -->
+    <div class="card">
+        <h3>👥 Users</h3>
+
+        {% for user in all_users %}
+            <div class="item">
+                <div>
+                    <b>{{ user.username }}</b><br>
+                    <small>{{ user.email }}</small>
+                </div>
+
+                {% if user.is_staff %}
+                    <span class="badge-manager">MANAGER</span>
+                {% else %}
+                    <span class="badge-user">USER</span>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>No users found</p>
+        {% endfor %}
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="card">
+        <h3>📦 Products</h3>
+
+        {% for p in all_products %}
+            <div class="item">
+                <div>
+                    <b>{{ p.product }}</b><br>
+                    <small>Qty: {{ p.quantity }}</small>
+                </div>
+
+                <span class="badge-user">{{ p.catogery }}</span>
+            </div>
+        {% empty %}
+            <p>No products found</p>
+        {% endfor %}
+    </div>
+
+    <!-- ORDERS -->
+    <div class="card" style="grid-column: 1 / -1;">
+        <h3>🛒 All Orders</h3>
+
+        {% for o in all_orders %}
+            <div class="item">
+
+                <!-- LEFT SIDE -->
+                <div>
+                    <b>{{ o.product.product }}</b><br>
+                    <small>User: {{ o.user.username }}</small><br>
+                    <small>Qty: {{ o.quantity }}</small>
+                </div>
+
+                <!-- STATUS BADGE -->
+                <span class="status {{ o.status }}">
+                    {{ o.status|title }}
+                </span>
+
+                <!-- UPDATE FORM -->
+                <form method="POST" action="{% url 'update_status' o.id %}">
+                    {% csrf_token %}
+
+                    <select name="status">
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+
+                    <button type="submit">Update</button>
+                </form>
+
+            </div>
+        {% empty %}
+            <p>No orders found</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- LINKS -->
+<a href="{% url 'manager_profile' %}">manager_profile</a>
+<a href="{% url 'add_employe' %}">add user</a>
+<a href="{% url 'product_add' %}">add product</a>
+
+</body>
+</html>

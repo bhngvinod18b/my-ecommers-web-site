@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Employee</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #eef2ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #15803d;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Add Employee</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input type="text" name="name" placeholder="Name">
+        <input type="text" name="password" placeholder="password">
+        <input type="text" name="employe_id" placeholder="Employee ID">
+        <input type="text" name="phone" placeholder="Phone">
+        <input type="text" name="department" placeholder="Department">
+
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Product</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #e0f2fe;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            width: 300px;
+            border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2563eb;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Add Product</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input type="text" name="product" placeholder="Product">
+        <input type="number" name="quantity" placeholder="Quantity">
+        <input type="text" name="catogery" placeholder="Category">
+        <input type="number" name="price" placeholder="price">
+
+        <button type="submit">Save</button>
+    </form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Place Order</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            background:#f3f4f6;
+        }
+
+        /* CONTAINER */
+        .container{
+            width:100%;
+            height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        /* CARD */
+        .card{
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            width:380px;
+            box-shadow:0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .title{
+            font-size:22px;
+            font-weight:bold;
+            margin-bottom:10px;
+            color:#111827;
+        }
+
+        .info{
+            color:#4b5563;
+            margin-bottom:10px;
+            font-size:15px;
+        }
+
+        label{
+            display:block;
+            margin-top:10px;
+            margin-bottom:6px;
+            font-weight:bold;
+            color:#111827;
+        }
+
+        /* INPUT */
+        input[type="number"], textarea{
+            width:100%;
+            padding:10px;
+            border:1px solid #d1d5db;
+            border-radius:6px;
+            outline:none;
+            font-size:15px;
+        }
+
+        input[type="number"]:focus,
+        textarea:focus{
+            border-color:#10b981;
+        }
+
+        textarea{
+            resize:none;
+            height:80px;
+            text-align:left;
+            vertical-align:top;
+        }
+
+        /* TOTAL BOX */
+        .total-box{
+            margin-top:15px;
+            background:#ecfdf5;
+            border:1px solid #a7f3d0;
+            padding:12px;
+            border-radius:6px;
+            color:#065f46;
+            font-weight:bold;
+            text-align:center;
+            font-size:18px;
+        }
+
+        /* BUTTON */
+        .btn{
+            margin-top:20px;
+            width:100%;
+            background:#10b981;
+            color:white;
+            padding:12px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            font-size:16px;
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            background:#059669;
+        }
+
+        /* BACK */
+        .back{
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            text-decoration:none;
+            color:#2563eb;
+            font-size:14px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- TITLE -->
+        <div class="title">
+            {{ product.product }}
+        </div>
+
+        <!-- INFO -->
+        <div class="info">
+            Category: {{ product.catogery }}
+        </div>
+
+        <div class="info">
+            Price Per Item: ₹{{ product.price }}
+        </div>
+
+        <div class="info">
+            Available Stock: {{ product.quantity }}
+        </div>
+
+        <div class="info" style="color:#dc2626;font-weight:bold;">
+            Remaining Stock: {{ product.quantity }}
+        </div>
+
+        <!-- FORM -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- QUANTITY -->
+            <label>Enter Quantity</label>
+            <input type="number"
+                   name="quantity"
+                   id="quantity"
+                   value="1"
+                   min="1"
+                   max="{{ product.quantity }}">
+
+            <!-- ADDRESS -->
+            <label>Delivery Address</label>
+            <textarea name="address" required>{{ profile.adress }}</textarea>
+
+            <!-- TOTAL PRICE -->
+            <div class="total-box">
+                Total Price: ₹
+                <span id="totalPrice">
+                    {{ product.price }}
+                </span>
+            </div>
+
+            <!-- BUTTON -->
+            <button type="submit" class="btn">
+                Confirm Order
+            </button>
+
+        </form>
+
+        <!-- BACK -->
+        <a href="{% url 'customer_home' %}" class="back">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+    const qtyInput = document.getElementById('quantity');
+    const totalPrice = document.getElementById('totalPrice');
+
+    const price = parseFloat("{{ product.price }}");
+
+    qtyInput.addEventListener('input', function(){
+
+        let qty = parseInt(this.value) || 1;
+
+        let total = qty * price;
+
+        totalPrice.innerText = total.toFixed(2);
+
+    });
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Home</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #f3f4f6;
+        }
+
+        .header {
+            background: #111827;
+            color: white;
+            padding: 15px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>User Dashboard</h2>
+</div>
+
+<div class="container">
+    <div class="card">
+        <h3>Welcome User 👤</h3>
+        <a href="{% url 'add_product' %}">Add Product</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+</body>
+</html>
