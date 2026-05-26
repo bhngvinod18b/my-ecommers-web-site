@@ -11,10 +11,18 @@ class Employee(models.Model):
         return f'{'name'} by {'phone'}'
     
 class Manager(models.Model):
-    name = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=100)
     def __str__(self):
         return f'{'name'} by {'phone'}'
+    
+class Notifications(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    reciver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reciver")
+    content = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f'{self.sender} send message to {'self.reciver'}'
     
 class Add_product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_name')

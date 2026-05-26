@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications</title>
+
+    <style>
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body{
+            background:#f4f7fb;
+            padding:40px;
+        }
+
+        .container{
+            max-width:800px;
+            margin:auto;
+        }
+
+        .title{
+            font-size:32px;
+            font-weight:bold;
+            margin-bottom:30px;
+            color:#222;
+        }
+
+        .notification-card{
+            background:white;
+            border-radius:12px;
+            padding:20px;
+            margin-bottom:20px;
+            box-shadow:0 4px 12px rgba(0,0,0,0.08);
+            transition:0.3s;
+            border-left:5px solid #4a90e2;
+        }
+
+        .notification-card:hover{
+            transform:translateY(-3px);
+            box-shadow:0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .top{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-bottom:10px;
+        }
+
+        .sender{
+            font-size:18px;
+            font-weight:bold;
+            color:#333;
+        }
+
+        .time{
+            font-size:13px;
+            color:gray;
+        }
+
+        .content{
+            font-size:16px;
+            color:#555;
+            line-height:1.5;
+        }
+
+        .empty{
+            background:white;
+            padding:30px;
+            border-radius:10px;
+            text-align:center;
+            color:gray;
+            box-shadow:0 4px 10px rgba(0,0,0,0.05);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1 class="title">Notifications</h1>
+
+    {% for i in all_notification %}
+
+    <div class="notification-card">
+
+        <div class="top">
+
+            <div class="sender">
+                {{ i.sender.username }}
+            </div>
+
+            <div class="time">
+                {{ i.created_at }}
+            </div>
+
+        </div>
+
+        <div class="content">
+            {{ i.content }}
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="empty">
+        No notifications available
+    </div>
+
+    {% endfor %}
+
+</div>
+
+</body>
+</html>

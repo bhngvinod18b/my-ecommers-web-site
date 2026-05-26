@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from .models import Employee, Manager, Add_product, Customer_profile, Book_product
+from .models import Employee, Manager, Add_product, Customer_profile, Book_product, Notifications
 
 
 # PUBLIC HOME
@@ -94,7 +94,8 @@ def manager_profile(request):
 
         if phone:
 
-            Manager.objects.create(
+            Manager.objects.get_or_create(
+                user=request.user,
                 phone=phone
             )
 
@@ -122,6 +123,13 @@ def product_add(request):
                 catogery=catogery,
                 price=price
             )
+            customers = Customer_profile.objects.all()
+            for cus in customers:
+                Notifications.objects.create(
+                    sender=request.user,
+                    reciver=cus.user,
+                    content=f'{request.user.username} added {product}'
+                    )
 
             return redirect('manager_dashboard')
 
@@ -172,13 +180,16 @@ def customer_dashboard(request):
 @login_required
 def delete_my_orders(request, id):
     my_order = get_object_or_404(Book_product, user=request.user, id=id)
+    
     if request.method == 'POST':
         my_order.delete()
+        manager = Manager.objects.first()
+        if manager:
+            Notifications.objects.create(
+                sender = request.user,
+                reciver = manager.user,
+                content = f'{request.user.username} deleted {my_order.product.product}')
         return redirect('customer_dashboard')
-    
-    
-    
-    
     
 from django.db.models import Q
 from .models import Add_product
@@ -210,11 +221,18 @@ def customer_home(request):
         'search_query': search_query,
         'category': category
     })
-from django.db import transaction
-from django.contrib import messages
+
 from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db import transaction
+
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from .models import Add_product, Book_product
+
+
 @login_required
 def place_order(request, id):
 
@@ -222,11 +240,11 @@ def place_order(request, id):
 
     if request.method == "POST":
 
-        qty = int(request.POST.get('quantity'))
+        qty = int(request.POST.get('quantity', 0))
         address = request.POST.get('address')
 
-        if qty > product.quantity:
-            messages.error(request, "Not enough stock")
+        if qty <= 0:
+            messages.error(request, "Invalid quantity")
             return redirect('place_order', id=id)
 
         with transaction.atomic():
@@ -237,23 +255,44 @@ def place_order(request, id):
                 messages.error(request, "Not enough stock")
                 return redirect('place_order', id=id)
 
-            Book_product.objects.create(
+            # create order
+            order = Book_product.objects.create(
                 product=product,
                 user=request.user,
                 quantity=qty,
                 address=address
             )
 
+            # reduce stock
             product.quantity -= qty
             product.save()
+
+        # -------------------------------
+        # WebSocket notification
+        # -------------------------------
+        print("🔥 Sending WebSocket notification...")
+
+        channel_layer = get_channel_layer()
+
+        async_to_sync(channel_layer.group_send)(
+            "manager_notifications",
+            {
+                "type": "send_order_notification",
+                "message": f"New order #{order.id} placed by {request.user.username} for {product.product}"
+            }
+        )
+
+        print("✅ WebSocket message sent")
 
         return redirect('succes_page')
 
     return render(request, 'place_order.html', {
         'product': product
     })
-
-
+@login_required
+def inbox(request):
+    all_notification = Notifications.objects.filter(reciver=request.user).all().order_by('-id')
+    return render(request, 'notification.html', {'all_notification': all_notification})
 @login_required
 def succes_page(request):
     return render(request, 'succes.html')

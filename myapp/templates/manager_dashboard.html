@@ -223,6 +223,27 @@
 <a href="{% url 'manager_profile' %}">manager_profile</a>
 <a href="{% url 'add_employe' %}">add user</a>
 <a href="{% url 'product_add' %}">add product</a>
+<a href="{% url 'inbox' %}">inbox</a>
+<script>
 
+const socket = new WebSocket(
+    'ws://' + window.location.host + '/ws/orders/'
+);
+
+socket.onmessage = function(e) {
+
+    const data = JSON.parse(e.data);
+
+    alert(data.message);
+
+    // Optional:
+    // show notification div
+};
+
+socket.onclose = function(e) {
+    console.log('WebSocket closed');
+};
+
+</script>
 </body>
 </html>

@@ -20,5 +20,6 @@ urlpatterns = [
     path('update-status/<int:order_id>/', views.update_status, name='update_status'),
     path('delete-order/<int:id>/', views.delete_my_orders, name='delete_my_orders'),
     path('place-order/<int:id>/', views.place_order, name='place_order'),
+    path('inbox/',views.inbox,name='inbox'),
     
 ]
