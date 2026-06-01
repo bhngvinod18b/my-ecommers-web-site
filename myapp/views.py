@@ -213,43 +213,32 @@ from django.db.models import Q
 from .models import Add_product
 from django.core.paginator import Paginator
 
-@login_required
-def customer_home(request):
+from django.core.paginator import Paginator
+from django.db.models import Q
 
+def customer_home(request):
     search_query = request.GET.get('search', '')
     category = request.GET.get('category', '')
 
-    all_products = Add_product.objects.all().order_by('-id')
-    paginator = Paginator(all_products, 4)
+    products = Add_product.objects.all()
+
+    if search_query:
+        products = products.filter(product__icontains=search_query)
+
+    if category:
+        products = products.filter(catogery=category)
+
+    paginator = Paginator(products, 4)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # 🔍 search filter
-    if search_query:
-        all_products = all_products.filter(
-            Q(product__icontains=search_query)
-        )
-        
-    for p in all_products:
-        p.avg_rating = Rating.objects.filter(product=p).aggregate(
-            Avg('rating')
-        )['rating__avg']
-
-
-    # 📂 category filter
-    if category:
-        all_products = all_products.filter(catogery=category)
-
-    # ✅ dynamic categories for dropdown
-    categories = Add_product.objects.values_list('catogery', flat=True).distinct()
-
     return render(request, 'customer_home.html', {
-        'all_products': page_obj,
-        'categories': categories,
+        'page_obj': page_obj,
         'search_query': search_query,
         'category': category,
-        'page_obj': page_obj,
+        'categories': Add_product.objects.values_list('catogery', flat=True).distinct()
     })
+
 @login_required
 def product_availability(request):
     all_products = Add_product.objects.all().order_by('-id')
@@ -268,7 +257,7 @@ from django.db import transaction
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-from .models import Add_product, Book_product
+from .models import Add_product, Book_product, Wishlist
 
 
 @login_required
@@ -373,7 +362,24 @@ def product_ratings_page(request, id):
         'product': product,
         'ratings': ratings
     })
-        
+       
+@login_required
+def my_wishlist(request, id):
+    product = get_object_or_404(Add_product, id=id)
+    if product:
+        Wishlist.objects.get_or_create(product=product, user=request.user)
+        return redirect('wishlist_sucses')
+    return render(request, 'wishlist.html', {'product': product})
+@login_required
+def wishlist_sucses(request):
+    return render(request, 'w_sucses.html')
+@login_required
+def wishlist_list(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user)
+    return render(request, 'wishlist_list.html', {
+        'wishlist_items': wishlist_items
+    })
+    
 # LOGIN
 def user_login(request):
 

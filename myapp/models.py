@@ -93,5 +93,12 @@ class Rating(models.Model):
     def __str__(self):
         return f'{self.user} give {self.rating}'
     
+class Wishlist(models.Model):
+    product = models.ForeignKey(Add_product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'{self.user} added {self.product}'
+    
 
     

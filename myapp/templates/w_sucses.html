@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Wishlist Success</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial;
+        }
+
+        body{
+            background:#f3f4f6;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+
+        .success-box{
+            background:white;
+            padding:40px;
+            border-radius:15px;
+            text-align:center;
+            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+            width:400px;
+        }
+
+        .success-box h1{
+            color:#10b981;
+            margin-bottom:15px;
+        }
+
+        .success-box p{
+            color:#555;
+            margin-bottom:25px;
+        }
+
+        .btn{
+            display:inline-block;
+            padding:10px 20px;
+            background:#2563eb;
+            color:white;
+            text-decoration:none;
+            border-radius:8px;
+            margin:5px;
+        }
+
+        .btn:hover{
+            background:#1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="success-box">
+        <h1>❤️ Added to Wishlist</h1>
+
+        <p>The product has been added to your wishlist successfully.</p>
+
+        <a href="{% url 'customer_home' %}" class="btn">
+            Continue Shopping
+        </a>
+
+        <a href="{% url 'wishlist_list' %}" class="btn">
+            View Wishlist
+        </a>
+    </div>
+
+</body>
+</html>

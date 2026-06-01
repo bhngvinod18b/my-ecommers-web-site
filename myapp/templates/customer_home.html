@@ -177,6 +177,16 @@
             color:#2563eb;
         }
 
+        .wishlist-btn{
+            margin-top:10px;
+            display:inline-block;
+            background:#f59e0b;
+            color:white;
+            padding:8px 12px;
+            border-radius:6px;
+            text-decoration:none;
+        }
+
     </style>
 </head>
 
@@ -233,17 +243,17 @@
                 <span class="out-stock">Out of Stock</span>
             {% endif %}
 
-            <!-- ⭐ SAFE RATING -->
-           <!-- ⭐ SAFE RATING -->
-<div class="rating">
+            <!-- ⭐ Rating -->
+            <div class="rating">
+                <a href="{% url 'product_ratings_page' p.id %}" style="color:#f59e0b;">
+                    ⭐ Give rating
+                </a>
+            </div>
 
-    <a href="{% url 'product_ratings_page' p.id %}" 
-       style="text-decoration:none; color:#f59e0b;">
-        ⭐ Give rating
-    </a>
-
-</div>     
-            
+            <!-- ❤️ Wishlist FIXED -->
+            <a href="{% url 'my_wishlist' p.id %}" class="wishlist-btn">
+                ❤️ Add to Wishlist
+            </a>
 
         </div>
 
@@ -259,7 +269,8 @@
     <a href="{% url 'customer' %}">My Profile</a> |
     <a href="{% url 'my_bookings' %}">My Bookings</a> |
     <a href="{% url 'inbox' %}">Inbox</a> |
-    <a href="{% url 'product_availability' %}">Availability</a>
+    <a href="{% url 'product_availability' %}">Availability</a> |
+    <a href="{% url 'wishlist_list' %}">❤️ My Wishlist</a>
 </div>
 
 <div class="pagination">
