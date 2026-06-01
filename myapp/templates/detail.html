@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Details</title>
+
+    <style>
+
+        body{
+            font-family:Arial;
+            background:linear-gradient(135deg,#e0e7ff,#f3f4f6);
+            margin:0;
+            padding:0;
+        }
+
+        .container{
+            max-width:650px;
+            margin:60px auto;
+            background:white;
+            padding:30px;
+            border-radius:16px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.1);
+            transition:0.3s;
+        }
+
+        .container:hover{
+            transform:translateY(-3px);
+        }
+
+        .title{
+            text-align:center;
+            font-size:28px;
+            font-weight:bold;
+            margin-bottom:25px;
+            color:#111827;
+        }
+
+        .row{
+            display:flex;
+            justify-content:space-between;
+            padding:14px;
+            border-bottom:1px solid #f1f5f9;
+        }
+
+        .label{
+            font-weight:bold;
+            color:#374151;
+        }
+
+        .value{
+            color:#111827;
+        }
+
+        .price{
+            text-align:center;
+            font-size:26px;
+            font-weight:bold;
+            color:#16a34a;
+            margin:20px 0;
+        }
+
+        .btn{
+            display:block;
+            text-align:center;
+            margin-top:15px;
+            background:#6366f1;
+            color:white;
+            padding:12px;
+            border-radius:10px;
+            text-decoration:none;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        .btn:hover{
+            background:#4f46e5;
+        }
+
+        .buy-btn{
+            display:block;
+            text-align:center;
+            margin-top:20px;
+            background:#10b981;
+            color:white;
+            padding:12px;
+            border-radius:10px;
+            text-decoration:none;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        .buy-btn:hover{
+            background:#059669;
+        }
+
+        /* RATING STYLE */
+        .value span{
+            font-weight:bold;
+            color:#f59e0b;
+        }
+
+        .no-rating{
+            color:#9ca3af;
+            font-style:italic;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">{{ product.product }}</div>
+
+    <div class="row">
+        <div class="label">Category</div>
+        <div class="value">{{ product.catogery }}</div>
+    </div>
+
+    <div class="row">
+        <div class="label">Quantity</div>
+        <div class="value">{{ product.quantity }}</div>
+    </div>
+
+    <div class="row">
+        <div class="label">Price</div>
+        <div class="value">₹{{ product.price }}</div>
+    </div>
+
+    <!-- ⭐ RATING DISPLAY -->
+    <div class="row">
+    <div class="label">Rating</div>
+    <div class="value">
+
+        {% if avg_rating %}
+            <a href="{% url 'product_ratings_page' product.id %}">
+                <span>⭐ {{ avg_rating|floatformat:1 }} / 5 (View Reviews)</span>
+            </a>
+        {% else %}
+            <a href="{% url 'product_ratings_page' product.id %}">
+                <span class="no-rating">No ratings yet - View</span>
+            </a>
+        {% endif %}
+
+    </div>
+</div>
+    <!-- BOOK -->
+    <a href="{% url 'place_order' product.id %}" class="buy-btn">
+        🛒 Book Now
+    </a>
+
+    <!-- RATE -->
+    <a href="{% url 'give_rating' product.id %}" class="btn">
+        ⭐ Give Rating
+    </a>
+
+</div>
+
+</body>
+</html>

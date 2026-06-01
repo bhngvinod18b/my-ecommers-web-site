@@ -54,7 +54,14 @@ def update_status(request, order_id):
     if request.method == "POST":
         order.status = request.POST.get('status')
         order.save()
-
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+    f"user_{order.user.id}",
+    {
+        "type": "send_status_update",
+        "message": f"Your order #{order.id} status updated to {order.status}"
+    }
+)
     return redirect('manager_dashboard')
 
 @login_required
@@ -111,30 +118,32 @@ def product_add(request):
 
         product = request.POST.get('product')
         quantity = request.POST.get('quantity')
-        catogery = request.POST.get('catogery')
+        category = request.POST.get('catogery')
         price = request.POST.get('price')
 
-        if product and quantity and catogery and price:
+        if product and quantity and category and price:
 
             Add_product.objects.create(
-                user=request.user,
+                users=request.user,
                 product=product,
                 quantity=quantity,
-                catogery=catogery,
+                catogery=category,
                 price=price
             )
+            
+
+            # send to ALL customers
             customers = Customer_profile.objects.all()
-            for cus in customers:
+            for customer in customers:
                 Notifications.objects.create(
                     sender=request.user,
-                    reciver=cus.user,
+                    reciver=customer.user,
                     content=f'{request.user.username} added {product}'
-                    )
+                )
 
             return redirect('manager_dashboard')
 
     return render(request, 'product.html')
-
 
 @login_required
 def customer(request):
@@ -177,22 +186,32 @@ def customer_dashboard(request):
         'my_orders': my_orders,
         'total_amount': total_amount
     })
+
 @login_required
 def delete_my_orders(request, id):
     my_order = get_object_or_404(Book_product, user=request.user, id=id)
     
     if request.method == 'POST':
+        product_name = my_order
+        order_id = id
+        username = request.user
         my_order.delete()
-        manager = Manager.objects.first()
-        if manager:
-            Notifications.objects.create(
-                sender = request.user,
-                reciver = manager.user,
-                content = f'{request.user.username} deleted {my_order.product.product}')
+        channel_layer = get_channel_layer()
+
+        async_to_sync(channel_layer.group_send)(
+            "manager_notifications",
+            {
+                "type": "send_order_notification",
+                "message": f"❌ Order #{order_id} deleted by {username} ({product_name})"
+            }
+        )
+        
+    
         return redirect('customer_dashboard')
     
 from django.db.models import Q
 from .models import Add_product
+from django.core.paginator import Paginator
 
 @login_required
 def customer_home(request):
@@ -201,12 +220,21 @@ def customer_home(request):
     category = request.GET.get('category', '')
 
     all_products = Add_product.objects.all().order_by('-id')
+    paginator = Paginator(all_products, 4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     # 🔍 search filter
     if search_query:
         all_products = all_products.filter(
             Q(product__icontains=search_query)
         )
+        
+    for p in all_products:
+        p.avg_rating = Rating.objects.filter(product=p).aggregate(
+            Avg('rating')
+        )['rating__avg']
+
 
     # 📂 category filter
     if category:
@@ -216,15 +244,25 @@ def customer_home(request):
     categories = Add_product.objects.values_list('catogery', flat=True).distinct()
 
     return render(request, 'customer_home.html', {
-        'all_products': all_products,
+        'all_products': page_obj,
         'categories': categories,
         'search_query': search_query,
-        'category': category
+        'category': category,
+        'page_obj': page_obj,
     })
+@login_required
+def product_availability(request):
+    all_products = Add_product.objects.all().order_by('-id')
+    search_query = request.GET.get('search', '')
+    if search_query:
+        all_products = all_products.filter(
+            Q(product__icontains=search_query)|
+            Q(product__icontains=search_query)
+        )
+    return render(request, 'product_availability.html',
+                  {'all_products': all_products, 'search_query': search_query})
+        
 
-from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 
 from asgiref.sync import async_to_sync
@@ -284,7 +322,7 @@ def place_order(request, id):
 
         print("✅ WebSocket message sent")
 
-        return redirect('succes_page')
+        return redirect('succes_page', id=product.id)
 
     return render(request, 'place_order.html', {
         'product': product
@@ -293,13 +331,49 @@ def place_order(request, id):
 def inbox(request):
     all_notification = Notifications.objects.filter(reciver=request.user).all().order_by('-id')
     return render(request, 'notification.html', {'all_notification': all_notification})
-@login_required
-def succes_page(request):
-    return render(request, 'succes.html')
+def succes_page(request, id):
+    product = get_object_or_404(Add_product, id=id)
+    return render(request, 'succes.html', {'product': product})
 @login_required
 def my_bookings(request):
     bookings = Book_product.objects.filter(user=request.user).order_by('created_at')
     return render(request, 'booking.html', {'bookings': bookings})
+from .models import Rating
+@login_required
+def give_rating(request, id):
+    product = get_object_or_404(Add_product, id=id)
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review = request.POST.get('review')
+        if rating and review:
+            Rating.objects.create(
+                product=product, rating=int(rating), review=review, user=request.user
+                
+            )
+            return redirect('customer_dashboard')
+    return render(request, 'rating.html', {'product': product})
+from django.db.models import Avg
+@login_required
+def product_detail_page(request, id):
+    product = get_object_or_404(Add_product, id=id)
+    avg_rating = Rating.objects.filter(product=product).aggregate(
+        Avg('rating')
+    )['rating__avg']
+    return render(request, 'detail.html', {
+        'product': product,
+        'avg_rating': avg_rating
+    })
+            
+@login_required
+def product_ratings_page(request, id):
+    product = get_object_or_404(Add_product, id=id)
+    ratings = Rating.objects.filter(product=product).order_by('-created_at')
+
+    return render(request, 'ratings_list.html', {
+        'product': product,
+        'ratings': ratings
+    })
+        
 # LOGIN
 def user_login(request):
 

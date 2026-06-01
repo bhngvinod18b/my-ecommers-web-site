@@ -76,6 +76,15 @@
         <a href="{% url 'customer_home' %}" class="btn">
             Go to Home
         </a>
+        <!-- GIVE RATING (SAFE) -->
+        {% if product %}
+            <a href="{% url 'give_rating' product.id %}" class="btn">
+                ⭐ Give Rating
+            </a>
+        {% endif %}
+
+        
+    
 
     </div>
 

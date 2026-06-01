@@ -244,6 +244,36 @@ socket.onclose = function(e) {
     console.log('WebSocket closed');
 };
 
+
 </script>
+
+
+<div id="notifications"></div>
+
+<script>
+    const socket = new WebSocket(
+        'ws://' + window.location.host + '/ws/notifications/'
+    );
+
+    socket.onmessage = function(e) {
+
+        const data = JSON.parse(e.data);
+
+        const notificationsDiv =
+            document.getElementById('notifications');
+
+        notificationsDiv.innerHTML =
+            `<div style="background:#eee;padding:10px;margin:5px;">
+                ${data.message}
+            </div>` + notificationsDiv.innerHTML;
+    };
+
+    socket.onclose = function(e) {
+        console.log("Socket closed");
+    };
+</script>
+
+</script>
+
 </body>
 </html>

@@ -15,11 +15,16 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     path('customer-dashboard/', views.customer_dashboard, name='customer_dashboard'),
     path('customer-home/', views.customer_home, name='customer_home'),
-    path('success/', views.succes_page, name='succes_page'),
+    path('success/<int:id>/', views.succes_page, name='succes_page'),
     path('my-bookings/', views.my_bookings, name='my_bookings'),
     path('update-status/<int:order_id>/', views.update_status, name='update_status'),
     path('delete-order/<int:id>/', views.delete_my_orders, name='delete_my_orders'),
     path('place-order/<int:id>/', views.place_order, name='place_order'),
     path('inbox/',views.inbox,name='inbox'),
-    
+    path('product-availability/', views.product_availability, name='product_availability'),
+    path('rating/<int:id>/', views.give_rating, name='give_rating'),
+    path('product/<int:id>/', views.product_detail_page, name='product_detail_page'),
+    path('product/<int:id>/ratings/', views.product_ratings_page, name='product_ratings_page'),
 ]
+
+    

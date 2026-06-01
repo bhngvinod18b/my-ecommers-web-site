@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Availability</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 8px;
+            width: 250px;
+        }
+
+        button {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .product-box {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+
+        .in-stock {
+            color: green;
+            font-weight: bold;
+        }
+
+        .out-stock {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Search Product Availability</h2>
+
+<!-- 🔍 SEARCH FORM -->
+<form method="GET" action="{% url 'product_availability' %}" class="search-box">
+
+    <input type="text"
+           name="search"
+           placeholder="Search product or category..."
+           value="{{ search_query }}">
+
+    <button type="submit">Search</button>
+
+    <!-- optional reset -->
+    <a href="{% url 'product_availability' %}">
+        <button type="button">Reset</button>
+    </a>
+
+</form>
+
+<hr>
+
+<!-- 📦 PRODUCTS -->
+{% for p in all_products %}
+    <div class="product-box">
+
+        <h3>{{ p.product }}</h3>
+
+        <p><b>Category:</b> {{ p.catogery }}</p>
+        <p><b>Price:</b> ₹{{ p.price }}</p>
+
+        <p><b>Available Quantity:</b> {{ p.quantity }}</p>
+
+        {% if p.quantity > 0 %}
+            <p class="in-stock">In Stock ✅</p>
+        {% else %}
+            <p class="out-stock">Out of Stock ❌</p>
+        {% endif %}
+
+    </div>
+
+{% empty %}
+    <p>No products found</p>
+{% endfor %}
+
+</body>
+</html>

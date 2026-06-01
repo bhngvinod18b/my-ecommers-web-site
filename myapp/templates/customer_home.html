@@ -16,7 +16,6 @@
             background:#f3f4f6;
         }
 
-        /* NAVBAR */
         .navbar{
             background:#111827;
             color:white;
@@ -38,7 +37,6 @@
             border-radius:6px;
         }
 
-        /* WELCOME */
         .welcome{
             text-align:center;
             padding:25px;
@@ -46,11 +44,6 @@
             color:white;
         }
 
-        .welcome h1{
-            margin-bottom:5px;
-        }
-
-        /* SEARCH */
         .search-box{
             text-align:center;
             margin:20px 0;
@@ -74,14 +67,12 @@
             cursor:pointer;
         }
 
-        /* CONTAINER */
         .container{
             width:90%;
             margin:auto;
             padding:30px 0;
         }
 
-        /* GRID */
         .grid{
             display:grid;
             grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -93,11 +84,6 @@
             padding:20px;
             border-radius:12px;
             box-shadow:0 5px 15px rgba(0,0,0,0.1);
-            transition:0.3s;
-        }
-
-        .card:hover{
-            transform:translateY(-5px);
         }
 
         .title{
@@ -136,14 +122,12 @@
             padding:8px 12px;
             border-radius:6px;
             text-decoration:none;
-            transition:0.3s;
         }
 
         .buy-btn:hover{
             background:#059669;
         }
 
-        /* OUT OF STOCK */
         .out-stock{
             margin-top:12px;
             display:inline-block;
@@ -152,6 +136,15 @@
             padding:8px 12px;
             border-radius:6px;
             font-size:13px;
+        }
+
+        .rating{
+            margin-top:10px;
+        }
+
+        .rating a{
+            text-decoration:none;
+            font-weight:bold;
         }
 
         .empty{
@@ -173,119 +166,117 @@
             font-weight:bold;
         }
 
+        .pagination{
+            text-align:center;
+            margin:20px;
+        }
+
+        .pagination a{
+            margin:0 5px;
+            text-decoration:none;
+            color:#2563eb;
+        }
+
     </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-
     <h2>🛍️ Customer Panel</h2>
-
     <a href="{% url 'logout' %}">Logout</a>
-
 </div>
 
-<!-- WELCOME -->
 <div class="welcome">
-
     <h1>Welcome {{ request.user.username }} 👋</h1>
-
     <p>Explore and book your favorite products</p>
-
 </div>
 
-<!-- SEARCH -->
 <form method="GET" class="search-box">
 
     <input type="text" name="search" placeholder="Search products..." value="{{ search_query }}">
 
     <select name="category">
-
         <option value="">All Categories</option>
-
         {% for c in categories %}
-
             <option value="{{ c }}" {% if category == c %}selected{% endif %}>
                 {{ c|title }}
             </option>
-
         {% endfor %}
-
     </select>
 
     <button type="submit">Search</button>
 
 </form>
 
-<!-- PRODUCTS -->
 <div class="container">
 
     <div class="grid">
 
-        {% for p in all_products %}
+        {% for p in page_obj %}
 
-            <div class="card">
+        <div class="card">
 
-                <div class="title">
-                    {{ p.product }}
-                </div>
+            <div class="title">{{ p.product }}</div>
 
-                <div class="price">
-                    ₹{{ p.price }}
-                </div>
+            <div class="price">₹{{ p.price }}</div>
 
-                <!-- REMAINING STOCK -->
-                <div class="info">
-                    Remaining Stock: {{ p.quantity }}
-                </div>
+            <div class="info">Remaining Stock: {{ p.quantity }}</div>
 
-                <span class="tag">
-                    {{ p.catogery }}
-                </span>
+            <span class="tag">{{ p.catogery }}</span>
 
-                <br>
+            {% if p.quantity > 0 %}
+                <a href="{% url 'product_detail_page' p.id %}" class="buy-btn">
+                    View Product
+                </a>
+            {% else %}
+                <span class="out-stock">Out of Stock</span>
+            {% endif %}
 
-                <!-- BUTTON LOGIC -->
-                {% if p.quantity > 0 %}
+            <!-- ⭐ SAFE RATING -->
+           <!-- ⭐ SAFE RATING -->
+<div class="rating">
 
+    <a href="{% url 'product_ratings_page' p.id %}" 
+       style="text-decoration:none; color:#f59e0b;">
+        ⭐ Give rating
+    </a>
 
-                    
-                    <a href="{% url 'place_order' p.id %}" class="buy-btn">
-                        Book Now 
-                    </a>
-    
+</div>     
+            
 
-                {% else %}
-
-                    <span class="out-stock">
-                        Out of Stock
-                    </span>
-
-                {% endif %}
-
-            </div>
+        </div>
 
         {% empty %}
-
-            <div class="empty">
-                No products available
-            </div>
-
+            <div class="empty">No products available</div>
         {% endfor %}
 
     </div>
-
 </div>
 
-<!-- LINKS -->
 <div class="links">
-
     <a href="{% url 'customer_dashboard' %}">Customer Dashboard</a> |
     <a href="{% url 'customer' %}">My Profile</a> |
     <a href="{% url 'my_bookings' %}">My Bookings</a> |
-    <a href="{% url 'inbox' %}">inbox</a>
+    <a href="{% url 'inbox' %}">Inbox</a> |
+    <a href="{% url 'product_availability' %}">Availability</a>
+</div>
+
+<div class="pagination">
+
+    {% if page_obj.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+    {% endif %}
 
 </div>
 

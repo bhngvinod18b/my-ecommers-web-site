@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Reviews</title>
+
+    <style>
+        body{
+            font-family:Arial;
+            background:#f3f4f6;
+            margin:0;
+            padding:0;
+        }
+
+        .container{
+            max-width:700px;
+            margin:50px auto;
+            background:white;
+            padding:25px;
+            border-radius:12px;
+        }
+
+        .title{
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
+
+        .card{
+            padding:15px;
+            border-bottom:1px solid #eee;
+        }
+
+        .stars{
+            color:#f59e0b;
+            font-weight:bold;
+        }
+
+        .review{
+            margin-top:5px;
+            color:#374151;
+        }
+
+        .user{
+            font-size:13px;
+            color:#6b7280;
+        }
+
+        .back{
+            display:block;
+            text-align:center;
+            margin-top:20px;
+            text-decoration:none;
+            color:#ef4444;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="title">{{ product.product }} - Reviews</div>
+
+    {% for r in ratings %}
+
+        <div class="card">
+
+            <div class="stars">
+                ⭐ {{ r.rating }}/5
+            </div>
+
+            <div class="review">
+                {{ r.review }}
+            </div>
+
+            <div class="user">
+                By {{ r.user.username }} | {{ r.created_at }}
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <p>No reviews yet.</p>
+
+    {% endfor %}
+
+    <a href="{% url 'product_detail_page' product.id %}" class="back">
+        ← Back
+    </a>
+
+</div>
+
+</body>
+</html>
