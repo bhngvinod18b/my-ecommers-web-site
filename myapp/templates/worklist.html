@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Worklist</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+        }
+        th {
+            background: #f4f4f4;
+        }
+        a {
+            text-decoration: none;
+            color: blue;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, select, button {
+            padding: 6px 10px;
+            margin-right: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Worklist</h2>
+
+<!-- Search and Status Filter Form -->
+<form method="get">
+    <input type="text" name="search" placeholder="Search by ID or Username" value="{{ search_query }}">
+    
+    <select name="status">
+        <option value="">All Status</option>
+        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="confirmed" {% if status_filter == 'confirmed' %}selected{% endif %}>Confirmed</option>
+        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+    </select>
+    
+    <button type="submit">Search</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Product Name</th>
+            <th>Status</th>
+            <th>Created At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in all_products %}
+        <tr>
+            <td>
+                <a href="{% url 'update_status_quick' item.id %}">{{ item.id }}</a>
+            </td>
+            <td>{{ item.user.username }}</td>
+            <td>{{ item.product.product }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.created_at }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No results found.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

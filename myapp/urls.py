@@ -27,7 +27,10 @@ urlpatterns = [
     path('product-availability/', views.product_availability, name='product_availability'),
     path('rating/<int:id>/', views.give_rating, name='give_rating'),
     path('product/<int:id>/', views.product_detail_page, name='product_detail_page'),
+    path('dashboard/', views.my_dashboard, name='my_dashboard'),
+    path('worklist/', views.my_worklist, name='my_worklist'),
+    path('worklist/update/<int:order_id>/', views.update_status_quick, name='update_status_quick'),
     path('product/<int:id>/ratings/', views.product_ratings_page, name='product_ratings_page'),
+    path('top-selling-products/',views.top_selling_product,name='top_selling_product'),
 ]
-
     

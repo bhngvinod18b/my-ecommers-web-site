@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Selling Products</title>
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        margin: 0;
+        padding: 30px;
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: auto;
+        background: #fff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: #007bff;
+        color: white;
+    }
+
+    th, td {
+        padding: 14px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    tbody tr:nth-child(even) {
+        background: #f8f9fa;
+    }
+
+    tbody tr:hover {
+        background: #eaf3ff;
+    }
+
+    .rank {
+        font-weight: bold;
+        color: #007bff;
+    }
+
+    .price {
+        color: green;
+        font-weight: bold;
+    }
+
+    .sold {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .empty {
+        text-align: center;
+        padding: 20px;
+        color: #777;
+    }
+</style>
+
+
+</head>
+<body>
+
+<div class="container">
+
+
+<h2>🏆 Top Selling Products</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Total Sold</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in top_selling %}
+        <tr>
+            <td class="rank">#{{ forloop.counter }}</td>
+            <td>{{ item.product__product }}</td>
+            <td class="price">₹{{ item.product__price }}</td>
+            <td class="sold">{{ item.total_sold }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4" class="empty">
+                No sales available yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+
+</body>
+</html>

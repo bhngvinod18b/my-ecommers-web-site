@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+```
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial,sans-serif;
+    }
+
+    body{
+        background:#f4f6f9;
+        padding:20px;
+    }
+
+    h1{
+        margin-bottom:20px;
+        color:#333;
+    }
+
+    .stats{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+        gap:15px;
+        margin-bottom:30px;
+    }
+
+    .card-link{
+        text-decoration:none;
+        color:inherit;
+    }
+
+    .card{
+        padding:20px;
+        border-radius:12px;
+        text-align:center;
+        box-shadow:0 2px 10px rgba(0,0,0,.1);
+        transition:.3s;
+    }
+
+    .card:hover{
+        transform:translateY(-5px);
+    }
+
+    .card h2{
+        margin-bottom:10px;
+        font-size:28px;
+    }
+
+    .pending{
+        background:#ffe5e5;
+    }
+
+    .confirmed{
+        background:#d4edda;
+    }
+
+    .cancelled{
+        background:#fff3cd;
+    }
+
+    .wishlist{
+        background:#d1ecf1;
+    }
+
+    .daily{
+        background:#e2f0d9;
+    }
+
+    .monthly{
+        background:#d9e8ff;
+    }
+
+    .chart-box{
+        background:white;
+        padding:20px;
+        border-radius:12px;
+        box-shadow:0 2px 10px rgba(0,0,0,.1);
+        margin-bottom:30px;
+    }
+
+    .box{
+        background:white;
+        padding:20px;
+        border-radius:12px;
+        margin-bottom:25px;
+        box-shadow:0 2px 10px rgba(0,0,0,.1);
+    }
+
+    .box h2{
+        margin-bottom:15px;
+        color:#444;
+    }
+
+    .item{
+        padding:10px;
+        border-bottom:1px solid #eee;
+    }
+
+    .item:last-child{
+        border-bottom:none;
+    }
+
+    .back-btn{
+        display:inline-block;
+        padding:10px 20px;
+        background:#007bff;
+        color:white;
+        text-decoration:none;
+        border-radius:8px;
+    }
+
+    .back-btn:hover{
+        background:#0056b3;
+    }
+
+    html{
+        scroll-behavior:smooth;
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<h1>📊 Admin Dashboard</h1>
+
+<div class="stats">
+
+```
+<a href="#pending" class="card-link">
+    <div class="card pending">
+        <h2>{{ pending|length }}</h2>
+        <p>Pending Orders</p>
+    </div>
+</a>
+
+<a href="#confirmed" class="card-link">
+    <div class="card confirmed">
+        <h2>{{ confirmed|length }}</h2>
+        <p>Confirmed Orders</p>
+    </div>
+</a>
+
+<a href="#cancelled" class="card-link">
+    <div class="card cancelled">
+        <h2>{{ cancelled|length }}</h2>
+        <p>Cancelled Orders</p>
+    </div>
+</a>
+
+<a href="#wishlist" class="card-link">
+    <div class="card wishlist">
+        <h2>{{ most_wishlist|length }}</h2>
+        <p>Wishlist Items</p>
+    </div>
+</a>
+
+<div class="card daily">
+    <h2>₹{{ daily_revenue }}</h2>
+    <p>Today's Revenue</p>
+</div>
+
+<div class="card monthly">
+    <h2>₹{{ monthly_revenue }}</h2>
+    <p>Monthly Revenue</p>
+</div>
+```
+
+</div>
+
+<div class="chart-box">
+    <canvas id="dashboardChart"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById('dashboardChart'), {
+    type: 'bar',
+    data: {
+        labels: [
+            'Pending',
+            'Confirmed',
+            'Cancelled'
+        ],
+        datasets: [{
+            label: 'Orders',
+            data: [
+                {{ pending|length }},
+                {{ confirmed|length }},
+                {{ cancelled|length }}
+            ],
+            backgroundColor: [
+                'orange',
+                'green',
+                'red'
+            ]
+        }]
+    },
+    options:{
+        responsive:true
+    }
+});
+</script>
+
+<div class="box" id="pending">
+    <h2>🟠 Pending Orders</h2>
+
+```
+{% for order in pending %}
+    <div class="item">
+        #{{ order.id }}
+        -
+        {{ order.product }}
+        -
+        {{ order.user.username }}
+    </div>
+{% empty %}
+    <p>No pending orders.</p>
+{% endfor %}
+```
+
+</div>
+
+<div class="box" id="confirmed">
+    <h2>🟢 Confirmed Orders</h2>
+
+```
+{% for order in confirmed %}
+    <div class="item">
+        #{{ order.id }}
+        -
+        {{ order.product }}
+        -
+        {{ order.user.username }}
+    </div>
+{% empty %}
+    <p>No confirmed orders.</p>
+{% endfor %}
+```
+
+</div>
+
+<div class="box" id="cancelled">
+    <h2>🟡 Cancelled Orders</h2>
+
+```
+{% for order in cancelled %}
+    <div class="item">
+        #{{ order.id }}
+        -
+        {{ order.product }}
+        -
+        {{ order.user.username }}
+    </div>
+{% empty %}
+    <p>No cancelled orders.</p>
+{% endfor %}
+```
+
+</div>
+
+<div class="box">
+    <h2>📦 All Orders</h2>
+
+```
+{% for order in all_orders %}
+    <div class="item">
+        #{{ order.id }}
+        -
+        {{ order.product }}
+        -
+        {{ order.status }}
+    </div>
+{% endfor %}
+```
+
+</div>
+
+<div class="box" id="wishlist">
+    <h2>❤️ Wishlist</h2>
+
+```
+{% for item in most_wishlist %}
+    <div class="item">
+        {{ item.user.username }}
+        liked
+        {{ item.product }}
+    </div>
+{% empty %}
+    <p>No wishlist items.</p>
+{% endfor %}
+```
+
+</div>
+
+<a href="{% url 'home' %}" class="back-btn">
+    ← Back To Home
+</a>
+
+</body>
+</html>

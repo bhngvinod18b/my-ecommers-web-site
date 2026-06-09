@@ -63,7 +63,20 @@ def update_status(request, order_id):
     }
 )
     return redirect('manager_dashboard')
+# views.py
+login_required
+@login_required
+def update_status_quick(request, order_id):
+    order = get_object_or_404(Book_product, id=order_id)
 
+    if request.method == "POST":
+        status = request.POST.get('status')
+        if status in ['pending', 'confirmed', 'cancelled']:
+            order.status = status
+            order.save()
+            return redirect('my_worklist')
+
+    return render(request, 'update.html', {'item': order})
 @login_required
 def add_employe(request):
 
@@ -109,7 +122,11 @@ def manager_profile(request):
             return redirect('manager_dashboard')
 
     return render(request, 'manager_profile.html')
-
+@login_required
+def top_selling_product(request):
+    top_selling = Book_product.objects.values('product__product',
+            'product__price').annotate(total_sold = Sum('quantity')).order_by('-total_sold')
+    return render(request, 'top_selling.html', {'top_selling': top_selling})
 
 @login_required
 def product_add(request):
@@ -379,6 +396,70 @@ def wishlist_list(request):
     return render(request, 'wishlist_list.html', {
         'wishlist_items': wishlist_items
     })
+from django.utils import timezone
+from django.db.models import Sum
+
+@login_required
+def my_dashboard(request):
+    pending = Book_product.objects.select_related('user').filter(status="pending").order_by('-created_at')
+    confirmed = Book_product.objects.filter(status="confirmed").order_by('-created_at')
+    cancelled = Book_product.objects.filter(status='cancelled').order_by('-created_at')
+    all_orders = Book_product.objects.all().order_by('-created_at')
+    most_wishlist = Wishlist.objects.all().order_by('-id')
+    today = timezone.now().date()
+
+    # Today's revenue
+    daily_revenue = Book_product.objects.filter(
+        status="confirmed",
+        created_at__date=today
+    ).aggregate(
+        total=Sum('total_price')
+    )['total'] or 0
+
+    # Current month's revenue
+    monthly_revenue = Book_product.objects.filter(
+        status="confirmed",
+        created_at__year=today.year,
+        created_at__month=today.month
+    ).aggregate(
+        total=Sum('total_price')
+    )['total'] or 0
+
+    return render(request, 'dashboard.html', {
+    'pending': pending,
+    'confirmed': confirmed,
+    'cancelled': cancelled,
+    'all_orders': all_orders,
+    'most_wishlist': most_wishlist,
+    'daily_revenue': daily_revenue,
+    'monthly_revenue': monthly_revenue
+})
+from django.db.models import Q
+
+@login_required
+def my_worklist(request):
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', '')
+    all_products = Book_product.objects.select_related(
+        'user', 'product'
+    ).order_by('-created_at')
+    if search_query:
+        all_products = all_products.filter(
+            Q(id__icontains=search_query) |
+            Q(user__username__icontains=search_query)
+        )
+
+    # Apply status filter
+    if status_filter in ['pending', 'confirmed', 'cancelled']:
+        all_products = all_products.filter(status=status_filter)
+
+
+    return render(request, 'worklist.html', {
+        'all_products': all_products,
+        'search_query': search_query,
+        'status_filter': status_filter,
+    })
+
     
 # LOGIN
 def user_login(request):
