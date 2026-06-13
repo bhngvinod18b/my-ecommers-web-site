@@ -120,8 +120,38 @@
             .container {
                 grid-template-columns: 1fr;
             }
-        }
+        }/* BOTTOM MENU */
+.bottom-links{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:12px;
+    padding:20px;
+}
 
+.menu-btn{
+    background:#111827;
+    color:white;
+    text-decoration:none;
+    padding:10px 18px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:bold;
+    transition:0.3s;
+    border:1px solid #1f2937;
+    min-width:140px;
+    text-align:center;
+}
+
+.menu-btn:hover{
+    background:#374151;
+    transform:translateY(-2px);
+    box-shadow:0 4px 10px rgba(0,0,0,0.15);
+}
+
+.menu-btn:active{
+    transform:translateY(0);
+}
     </style>
 </head>
 
@@ -218,15 +248,37 @@
     </div>
 
 </div>
+<div class="bottom-links">
 
-<!-- LINKS -->
-<a href="{% url 'manager_profile' %}">manager_profile</a>
-<a href="{% url 'add_employe' %}">add user</a>
-<a href="{% url 'product_add' %}">add product</a>
-<a href="{% url 'inbox' %}">inbox</a>
-<a href="{% url 'my_dashboard' %}"> my dahboard</a>
-<a href="{% url 'my_worklist' %}">Go to Worklist</a>
-<a href="{% url 'top_selling_product' %}">Top Selling Products</a>
+    <a href="{% url 'manager_profile' %}" class="menu-btn">
+        👤 Profile
+    </a>
+
+    <a href="{% url 'add_employe' %}" class="menu-btn">
+        ➕ Add User
+    </a>
+
+    <a href="{% url 'product_add' %}" class="menu-btn">
+        📦 Add Product
+    </a>
+
+    <a href="{% url 'inbox' %}" class="menu-btn">
+        📩 Inbox
+    </a>
+
+    <a href="{% url 'my_dashboard' %}" class="menu-btn">
+        📊 Dashboard
+    </a>
+
+    <a href="{% url 'my_worklist' %}" class="menu-btn">
+        📋 Worklist
+    </a>
+
+    <a href="{% url 'top_selling_product' %}" class="menu-btn">
+        🔥 Top Selling
+    </a>
+
+</div>
 <script>
 
 const socket = new WebSocket(
