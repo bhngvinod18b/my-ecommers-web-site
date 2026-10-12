@@ -25,9 +25,11 @@ ect customer have profile update and can book products and place order customer 
 - Product Categories
 - Product Quantity & Price Management
 - Product Search & Filtering
+- search invoice
 
 ### 📦 Order System
 - Place Orders
+- purches order
 - Booking Management
 - Order Status Updates
 - Stock Quantity Updates Automatically
